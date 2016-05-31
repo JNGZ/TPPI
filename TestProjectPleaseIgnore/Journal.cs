@@ -64,44 +64,44 @@ namespace TPPI
         public void getThenLoadData(string query)
         {
             /*1st DB Command*/
-            dbCmd = new OleDbCommand(query, dbConn);
-            var reader = dbCmd.ExecuteReader();
-            reader.Read();
-            txtDate.Text = reader["EntryDate"].ToString();
-            cboTopic.SelectedValue = (int)reader["TopicID"];
-            txtTopic.Text = reader["EntryDetails"].ToString();
-            activeID = (int)reader["JournalID"];
+            dbCmd = new OleDbCommand(query, dbConn);// instance of db command
+            var reader = dbCmd.ExecuteReader(); // variable reader set to command reader
+            reader.Read();// reader reads
+            txtDate.Text = reader["EntryDate"].ToString();// set date to record data
+            cboTopic.SelectedValue = (int)reader["TopicID"];// set combo box to record data
+            txtTopic.Text = reader["EntryDetails"].ToString();// set entry description to record data
+            activeID = (int)reader["JournalID"];// set active id to record data
         }
 
         /*Gets record count data and sets to screen*/
         public void getRecordCount()
         {
-            string qryQRYJournalTotals = "SELECT * FROM qryJournalTotals";
-            dbCmd = new OleDbCommand(qryQRYJournalTotals, dbConn);
-            var reader = dbCmd.ExecuteReader();
-            reader.Read();
-            totalRows = (int)reader["TotalJournals"];
-            lblRecordCount.Text = "Record " + activeID + " of " + totalRows;
+            string qryQRYJournalTotals = "SELECT * FROM qryJournalTotals";// SQL query - SELECT everything from query journals totals
+            dbCmd = new OleDbCommand(qryQRYJournalTotals, dbConn);// instance of db command
+            var reader = dbCmd.ExecuteReader();// variable reader set to command reader
+            reader.Read();// reader reads
+            totalRows = (int)reader["TotalJournals"];// total rows set to record data
+            lblRecordCount.Text = "Record " + activeID + " of " + totalRows;// record count set to total rows in data source
         }
 
         /*Load combox box data*/
-        public void loadComboBox(DataSet ds)
+        public void loadComboBox(DataSet ds)// Method takes one agrument ( dataset )
         {
-            string qryTblTopics = "SELECT * FROM tblTopics";
-            OleDbConnection dbConn = new OleDbConnection(cstring);
-            dbAdapter = new OleDbDataAdapter(qryTblTopics, dbConn);
-            dbConn.Open();
-            dbAdapter.Fill(ds);
-            cboTopic.DataSource = ds.Tables[0];
-            cboTopic.DisplayMember = "TopicDescription";
-            cboTopic.ValueMember = "TopicID";
+            string qryTblTopics = "SELECT * FROM tblTopics";// SQL query - SELECT everything from topics table
+            dbConn = new OleDbConnection(cstring);// instance of db connection
+            dbAdapter = new OleDbDataAdapter(qryTblTopics, dbConn);// instance of data adapter
+            dbConn.Open();// open db connection
+            dbAdapter.Fill(ds);// fill data adapter with data set 
+            cboTopic.DataSource = ds.Tables[0];// combo box data source set to dataset table index 0 
+            cboTopic.DisplayMember = "TopicDescription";// combo box display topic description
+            cboTopic.ValueMember = "TopicID";// combo box reference to topic id
         }
         
         /*Create dbConnection, dbCommand, open connection, execute query*/
         public static void conCmdExcQry(string query)
         {
-            OleDbConnection dbConn = new OleDbConnection(cstring); // Instantiate db Connection
-            OleDbCommand dbCmd = new OleDbCommand(query, dbConn);   // Instantiate db Command
+            dbConn = new OleDbConnection(cstring); // Instantiate db Connection
+            dbCmd = new OleDbCommand(query, dbConn);   // Instantiate db Command
             dbConn.Open();  // Open connection
             dbCmd.ExecuteNonQuery(); // Execute SQL query
         }
@@ -195,17 +195,17 @@ namespace TPPI
         /*OPEN NEW TOPIC WINDOW*/
         private void btnNewTopic_Click(object sender, EventArgs e)
         {
-            Topics frm = new Topics();
-            frm.Show();
+            Topics frm = new Topics();//instantiate topics form
+            frm.Show();//show the form
         }
 
-        /*SET UP DATA INPUT BOXES FOR NEW DATA*/
+        /*PREPARE INPUT BOXES FOR NEW DATA*/
         private void btnNewRecord_Click(object sender, EventArgs e)
         {
-            activeID = 0;
-            lblRecordCount.Text = "Record " + activeID + " of " + totalRows;
-            txtDate.Clear();
-            txtTopic.Clear();
+            activeID = 0; // Set active id to 0
+            lblRecordCount.Text = "Record " + activeID + " of " + totalRows; // Reset record count output
+            txtDate.Clear(); // clear date field
+            txtTopic.Clear(); // clear topic field
         }
 
         /*SAVE / UPDATE ENTRY DATA*/
@@ -215,18 +215,18 @@ namespace TPPI
             {
                 if (activeID == 0)
                 {
-                    string qryInsert = "INSERT INTO tblJournals (EntryDate, EntryDetails, TopicID) VALUES (\"" + txtDate.Text + "\", \"" + txtTopic.Text + "\", " + cboTopic.SelectedValue + " )";
-                    conCmdExcQry(qryInsert);
-                    dbConn.Close();
+                    string qryInsert = "INSERT INTO tblJournals (EntryDate, EntryDetails, TopicID) VALUES (\"" + txtDate.Text + "\", \"" + txtTopic.Text + "\", " + cboTopic.SelectedValue + " )";// SQL query inserts into journals table entry date, entry details, and topic
+                    conCmdExcQry(qryInsert);//creates db connection, db command, and executes query
+                    dbConn.Close();//closes db connection
                     btnLast_Click(null, null);
                 }
                 else
                 {
                     string qryUpdate = "UPDATE tblJournals " +
                         "SET EntryDate=\"" + txtDate.Text + "\", EntryDetails=\"" + txtTopic.Text + "\", TopicID=" + cboTopic.SelectedValue +
-                        " WHERE JournalID = " + activeID;
-                    conCmdExcQry(qryUpdate);
-                    activeID--;
+                        " WHERE JournalID = " + activeID;//SQL query - updates journals table with date, details, and topic
+                    conCmdExcQry(qryUpdate);//creates db connection, db command, and executes query
+                    activeID--;//decrease active id by 1
                     btnNext_Click(null, null);
                 }
             }
@@ -237,12 +237,12 @@ namespace TPPI
         }
 
         /*DELETE DATA ENTRY*/
-        private void btnDeleteData_Click(object sender, EventArgs e)
+        private void btnDeleteEntry_Click(object sender, EventArgs e)
         {
             try
             {
-                string qryDelete = "DELETE FROM tblJournals WHERE JournalID = " + activeID;
-                conCmdExcQry(qryDelete);
+                string qryDelete = "DELETE FROM tblJournals WHERE JournalID = " + activeID;// SQL query - DELETE from journals table where journal id equals active id
+                conCmdExcQry(qryDelete);// create db connection, db command then execute query
                 btnLast_Click(null, null);
             }
             catch (Exception ex)
@@ -254,8 +254,8 @@ namespace TPPI
         /*Sets the journal entry date to selected date*/
         private void dateTimePicker1_ValueChanged(object sender, EventArgs e)
         {
-            DateTime result = dateTimePicker1.Value;
-            txtDate.Text = result.ToString();
+            DateTime result = dateTimePicker1.Value;//create instance of datetime object to date time picker selected value
+            txtDate.Text = result.ToString();// set date time text value to result object
         }
 
         #endregion

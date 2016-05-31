@@ -209,7 +209,7 @@
             this.btnDeleteData.TabIndex = 8;
             this.btnDeleteData.Text = "&Delete";
             this.btnDeleteData.UseVisualStyleBackColor = true;
-            this.btnDeleteData.Click += new System.EventHandler(this.btnDeleteData_Click);
+            this.btnDeleteData.Click += new System.EventHandler(this.btnDeleteEntry_Click);
             // 
             // btnSaveData
             // 
