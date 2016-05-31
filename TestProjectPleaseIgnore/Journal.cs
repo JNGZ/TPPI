@@ -93,6 +93,7 @@ namespace TPPI
             cboTopic.DataSource = ds.Tables[0];// combo box data source set to dataset table index 0 
             cboTopic.DisplayMember = "TopicDescription";// combo box display topic description
             cboTopic.ValueMember = "TopicID";// combo box reference to topic id
+            dbConn.Close();// close db connection
         }
 
         /*Create dbConnection, dbCommand, open connection, execute query*/
