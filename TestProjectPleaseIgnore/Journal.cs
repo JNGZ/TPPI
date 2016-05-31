@@ -1,5 +1,4 @@
 ﻿///<summary>
-///======================================================================
 ///
 /// PROJECT NAME: Journal
 /// 
@@ -7,7 +6,6 @@
 /// 
 /// AUTHOR: Johnathan Gonzalez
 /// 
-/// ======================================================================
 /// </summary>
 
 using System;
@@ -40,21 +38,21 @@ namespace TPPI
 
         /*LOAD FUNCTION*/
         public void Journal_Load(object sender, EventArgs e)
-        {            
+        {
             string qryTblJournals = "SELECT * FROM tblJournals"; //get everthing from journals table
 
-                try
-                {
-                    loadComboBox(ds); //load combobox with dataset data
-                    dbConn.Open(); //open database connection
-                    getThenLoadData(qryTblJournals); // load all data into remaining fields
-                    getRecordCount();//load record count data
-                    dbConn.Close(); //close database connection
-                }
-                catch (Exception ex)
-                {
-                    DataProblem(ex);
-                }
+            try
+            {
+                loadComboBox(ds); //load combobox with dataset data
+                dbConn.Open(); //open database connection
+                getThenLoadData(qryTblJournals); // load all data into remaining fields
+                getRecordCount();//load record count data
+                dbConn.Close(); //close database connection
+            }
+            catch (Exception ex)
+            {
+                DataProblem(ex);
+            }
         }
 
 
@@ -96,7 +94,7 @@ namespace TPPI
             cboTopic.DisplayMember = "TopicDescription";// combo box display topic description
             cboTopic.ValueMember = "TopicID";// combo box reference to topic id
         }
-        
+
         /*Create dbConnection, dbCommand, open connection, execute query*/
         public static void conCmdExcQry(string query)
         {
@@ -159,7 +157,7 @@ namespace TPPI
             }
             catch (Exception ex)
             {
-                DataProblem(ex);    
+                DataProblem(ex);
             }
         }
 
