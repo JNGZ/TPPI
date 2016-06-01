@@ -10,8 +10,8 @@
 
 using System;
 using System.Data;
-using System.Windows.Forms;
 using System.Data.OleDb;
+using System.Windows.Forms;
 
 
 namespace TPPI
@@ -22,8 +22,8 @@ namespace TPPI
 
         int activeID = 1; // instance of active record id 
         int totalRows = 0; // instance of total rows in journal database
-        const string cstring = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=journal.accdb;Persist Security Info=True";//connection string
-        static OleDbConnection dbConn = new OleDbConnection(cstring); //instance of data base connection 
+        const string cString = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=journal.accdb;Persist Security Info=True";//connection string
+        static OleDbConnection dbConn = new OleDbConnection(cString); //instance of data base connection 
         static OleDbCommand dbCmd = new OleDbCommand(); //instance of data base command
         static OleDbDataAdapter dbAdapter = new OleDbDataAdapter(); //instance of data base adapter
         DataSet ds = new DataSet(); // instance of new dataset
@@ -86,7 +86,7 @@ namespace TPPI
         public void loadComboBox(DataSet ds)// Method takes one agrument ( dataset )
         {
             string qryTblTopics = "SELECT * FROM tblTopics";// SQL query - SELECT everything from topics table
-            dbConn = new OleDbConnection(cstring);// instance of db connection
+            dbConn = new OleDbConnection(cString);// instance of db connection
             dbAdapter = new OleDbDataAdapter(qryTblTopics, dbConn);// instance of data adapter
             dbConn.Open();// open db connection
             dbAdapter.Fill(ds);// fill data adapter with data set 
@@ -99,10 +99,24 @@ namespace TPPI
         /*Create dbConnection, dbCommand, open connection, execute query*/
         public static void conCmdExcQry(string query)
         {
-            dbConn = new OleDbConnection(cstring); // Instantiate db Connection
+            dbConn = new OleDbConnection(cString); // Instantiate db Connection
             dbCmd = new OleDbCommand(query, dbConn);   // Instantiate db Command
             dbConn.Open();  // Open connection
             dbCmd.ExecuteNonQuery(); // Execute SQL query
+        }
+
+        /*EXCEPTION METHOD*/
+        public static void DataProblem(Exception ex)
+        {
+            MessageBox.Show("Data problem: " + ex.Message);
+            dbConn.Close();
+        }
+
+        /*Sets the journal entry date to selected date*/
+        private void dateTimePicker1_ValueChanged(object sender, EventArgs e)
+        {
+            DateTime result = dateTimePicker1.Value;//create instance of datetime object to date time picker selected value
+            txtDate.Text = result.ToString();// set date time text value to result object
         }
 
         #endregion
@@ -179,13 +193,6 @@ namespace TPPI
             }
         }
 
-        /*EXCEPTION METHOD*/
-        public static void DataProblem(Exception ex)
-        {
-            MessageBox.Show("Data problem: " + ex.Message);
-            dbConn.Close();
-        }
-
         #endregion
 
 
@@ -248,13 +255,6 @@ namespace TPPI
             {
                 DataProblem(ex);
             }
-        }
-
-        /*Sets the journal entry date to selected date*/
-        private void dateTimePicker1_ValueChanged(object sender, EventArgs e)
-        {
-            DateTime result = dateTimePicker1.Value;//create instance of datetime object to date time picker selected value
-            txtDate.Text = result.ToString();// set date time text value to result object
         }
 
         #endregion
