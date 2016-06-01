@@ -6,44 +6,56 @@ CONTENTS
 	Summary
 	List of classes
 	Journal Class Memebers
+		Associated Algorithms
 	Topics Class Memebers
+		Associated Algorithms
 		
 ***********************************************************
 
 SUMMARY OF PROGRAM STATE PRIOR TO EDITING
 
-	The program was recieved in a semi-workig condition. 80% of the program's features were working but the source code was un organized and convoluted.
-	Listed below is an outline of the two classes used to create the program and their associated memebers. 
+	The program was recieved in a semi-workig condition. 80% of the program's features were working but the source code was un organized and convoluted. An additional form was created to add topics as a final feature to round out the application.
+	Listed below is an outline of the two classes used to create the program and their associated memebers along with sudo code for the methods algorithms.  
+
+=====================================================================================
 
 LIST OF CLASSES
 
 1. Journal.cs
 2. Topics.cs
 
+=====================================================================================
+
 JOURNAL CLASS MEMEBERS
 
 Global Variables:
 
-	activeID
-	totalRows
-	cString
-	dbConn
-	dbCmd
-	dbAdapter
-	ds
+	activeID: int
+	totalRows: int
+	cString: string
+	dbConn: OleDbConnection
+	dbCmd: OleDbCommand
+	dbAdapter: OleDbAdapter
+	ds: DataSet
 
 Methods:
 
 	Journal()
+		Class constructor
+
 	Journal_Load()
+		Load data to screen runs multiple methods. 
+			loadComboBod(ds)
+			dbConn.Open()
+			getThenLoadData(query)
+			getRecordCount()
+			dbConn.Close()
 
 	# UTILITY METHODS
 		
 		getThenLoadData(string)
 			It's function is to query the database and return then populate the date, combo box id, entry details and active entry ID. 
 			This method takes a unique query as string parameter.
-
-			## Uses: btnFirst_Click,
 
 			### Algorithm:
 				1. Instantiate db command then pass query and db connection
@@ -54,18 +66,52 @@ Methods:
 		getRecordCount()
 			It's function is to query the database then return and populate the total rows and record count text field.
 
+			### Algorithm:
+				1. create query string
+					** SELECT everything from journal totals 
+				2. instantiate db command and pass query + db connection 
+				3. create reader variable
+				4. reader reads
+				5. set total rows , lbl record count text to data received from query
+
 
 		loadComboBox(DataSet)
 			It's function is called when the user changes the combo box selection. The method will query the database and return data souce index, topic descriptor and topic id.
 
+			## Algorithm:
+				1. create query string
+					** SELECT everything from topics table
+				2. create db connection pass connection string
+				3. create db adapter pass query + db connection
+				4. open db connection
+				5. fill data adapter with dataset
+				6. set combo box data source 
+				7. set combo box display member = topic description
+				8. set combo box value memeber = topic id
+				9. close db connection
+
 		conCmdExcQry(string)
 			This method exists to quickly send a query to the database. Used by the save button, delete entry button and again in the topics class save button. Takes the query as a string parameter.
+
+			## Algorithm:
+				1. instantiate db connection with connection string
+				2. instantiate db command with query + db connection
+				3. open connection
+				4. execute non query command 
 
 		DataProblem(Exception)
 			Throws exception when data is missing on invalid.
 
+			## Algorithm:
+				1. show message box with "Data problem: " + exeception mesage
+				2. close data base connection
+
 		dateTimePicker1_ValueChanged(Event)
 			Used to display current date and set the data text field of the journal entry.
+
+			## Algorithm:
+				1. create result definition of type DateTime set to date time picker value
+				2. set date text = result
 
 	# EVENT CLICK METHODS
 		btnFirst_Click(Event)
@@ -133,7 +179,15 @@ Methods:
 						4. run btnLast_Click event method
 
 		btnDelete_Click(Event)
+			Used to delete the current journal entry.
 
+			##Algorithm:
+				1. create query string
+					** Delete everything from journals table where journal id = active ids
+				2. run conCmdExcQry(query) 
+				3. run btnLast_Click() event method
+
+============================================================================================
 
 Topics Class Members
 
@@ -142,6 +196,15 @@ Global Variables:  N/A
 Methods:
 	
 	Topics()
-	btnSave_Click(Event)
+		Class constructor.
 
+	btnSave_Click(Event)
+		Used to save the new topic to the topics table in database.
+
+		## Algorithm:
+			1.create query string
+				** Insert into topics table topic description
+			2. run conCmdExcQry(query)
+			3. show message box - success message
+			4. close form
 	
