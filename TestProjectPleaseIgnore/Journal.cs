@@ -48,6 +48,7 @@ namespace TPPI
                 getThenLoadData(qryTblJournals); // load all data into remaining fields
                 getRecordCount();//load record count data
                 dbConn.Close(); //close database connection
+                createDataTable();
             }
             catch (Exception ex)
             {
@@ -118,6 +119,24 @@ namespace TPPI
             DateTime result = dateTimePicker1.Value;//create instance of datetime object to date time picker selected value
             txtDate.Text = result.ToString();// set date time text value to result object
         }
+
+
+        public void createDataTable()
+        {
+            dbConn.Open();
+            DataSet ds2 = new DataSet();
+            string qryTblTopics = "SELECT * FROM tblJournals";// SQL query - SELECT everything from topics table
+            dbConn = new OleDbConnection(cString);// instance of db connection
+            dbAdapter = new OleDbDataAdapter(qryTblTopics, dbConn);// instance of data adapter
+            dbConn.Open();// open db connection
+            dbAdapter.Fill(ds2);// fill data adapter with data set 
+
+            DataTable dtJournals = ds2.Tables[0];
+
+            dbConn.Close();
+        }
+
+
 
         #endregion
 
