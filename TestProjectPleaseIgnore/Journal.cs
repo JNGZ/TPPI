@@ -29,7 +29,6 @@ namespace TPPI
         static OleDbCommand dbCmd = new OleDbCommand(); //instance of data base command
         static OleDbDataAdapter dbAdapter = new OleDbDataAdapter(); //instance of data base adapter
         DataSet ds = new DataSet(); // instance of new dataset
-        //DataSet ds2 = new DataSet(); // dataset used for journal datatable
         static DataTable dtJournals = new DataTable();
 
 
