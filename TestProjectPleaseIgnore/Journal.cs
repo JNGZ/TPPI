@@ -136,7 +136,6 @@ namespace TPPI
             });
 
             var list = myData.ToList(); // turn the enumerable collection into a list
-
             var id = activeID;   // set variable id to the active id 
             var index = list.FindIndex(a => a.id == id) + 1; // find the index that correlates to the active id
             int totalRows = list.Count(); // get the length of list 
