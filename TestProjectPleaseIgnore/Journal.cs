@@ -32,6 +32,7 @@ namespace TPPI
         DataSet ds2 = new DataSet(); // dataset used for journal datatable
         static DataTable dtJournals = new DataTable();
 
+
         #endregion
 
         /*CLASS CONSTRUCTOR*/
@@ -47,13 +48,12 @@ namespace TPPI
 
             try
             {
-                loadComboBox(ds); //load combobox with dataset data
                 dbConn.Open(); //open database connection
-                getThenLoadData(qryTblJournals); // load all data into remaining fields
-                getRecordCount();//load record count data
+                loadComboBox(ds); //load combobox with dataset data
+                getThenLoadData(qryTblJournals); // load all data into remaining fields              
+                getIndex(); // creates list from dataset                
                 dbConn.Close(); //close database connection
-                createDataTable();
-     
+
             }
             catch (Exception ex)
             {
@@ -65,9 +65,10 @@ namespace TPPI
         #region UTILITY FUNCTIONS
 
         /*Gets data and loads to screen*/
-        public void getThenLoadData(string query)
+        public int getThenLoadData(string query)
         {
             /*1st DB Command*/
+
             dbCmd = new OleDbCommand(query, dbConn);// instance of db command
             var reader = dbCmd.ExecuteReader(); // variable reader set to command reader
             reader.Read();// reader reads
@@ -75,19 +76,11 @@ namespace TPPI
             cboTopic.SelectedValue = (int)reader["TopicID"];// set combo box to record data
             txtTopic.Text = reader["EntryDetails"].ToString();// set entry description to record data
             activeID = (int)reader["JournalID"];// set active id to record data
+            return activeID;
+
+
         }
 
-        /*Gets record count data and sets to screen*/
-        public void getRecordCount()
-        {
-            string qryQRYJournalTotals = "SELECT * FROM qryJournalTotals";// SQL query - SELECT everything from query journals totals
-            dbCmd = new OleDbCommand(qryQRYJournalTotals, dbConn);// instance of db command
-            var reader = dbCmd.ExecuteReader();// variable reader set to command reader
-            reader.Read();// reader reads
-            totalRows = (int)reader["TotalJournals"];// total rows set to record data
-            lblRecordCount.Text = "Record " + activeID + " of " + totalRows;// record count set to total rows in data source
-            
-        }
 
         /*Load combox box data*/
         public void loadComboBox(DataSet ds)// Method takes one agrument ( dataset )
@@ -100,7 +93,7 @@ namespace TPPI
             cboTopic.DataSource = ds.Tables[0];// combo box data source set to dataset table index 0 
             cboTopic.DisplayMember = "TopicDescription";// combo box display topic description
             cboTopic.ValueMember = "TopicID";// combo box reference to topic id
-            dbConn.Close();// close db connection
+            //dbConn.Close();// close db connection
         }
 
         /*Create dbConnection, dbCommand, open connection, execute query*/
@@ -126,31 +119,30 @@ namespace TPPI
             txtDate.Text = result.ToString();// set date time text value to result object
         }
 
-
-        public DataTable createDataTable()
+        /*GET THE INDEX OF THE JOURNAL ENTRY*/
+        public void getIndex()
         {
-            dbConn.Open(); 
-
             string qryTblTopics = "SELECT * FROM tblJournals";// SQL query - SELECT everything from topics table
             dbConn = new OleDbConnection(cString);// instance of db connection
             dbAdapter = new OleDbDataAdapter(qryTblTopics, dbConn);// instance of data adapter
-            dbAdapter.Fill(ds2);// fill data adapter with data set 
-            dbConn.Close();
-            dtJournals = ds2.Tables[0];
+            DataSet dsIndexer = new DataSet();// new instance of data set
+            dbAdapter.Fill(dsIndexer);// fill data adapter with data set 
+            DataTable dtJournals = dsIndexer.Tables[0];//fill data table with data set table at index 0
 
-            var myData = ds2.Tables[0].AsEnumerable().Select(r => new
+            /*CREATES A NEW ENUMERABLE ROW COLLECTION OF TYPE ANNONYMOUS*/
+            var myData = dsIndexer.Tables[0].AsEnumerable().Select(r => new
             {
-                id = r.Field<int>("JournalID")
-
+                id = r.Field<int>("JournalID") // creates a coloumn and fills it with data from data set
             });
 
-            var list = myData.ToList();
-            activeID = 9;
-            var oProp = activeID;
-            var index = list.FindIndex(a => a.id == oProp);
-            int totalRows = list.Count();
-            return dtJournals;
+            var list = myData.ToList(); // turn the enumerable collection into a list
 
+            var id = activeID;   // set variable id to the active id 
+            var index = list.FindIndex(a => a.id == id) + 1; // find the index that correlates to the active id
+            int totalRows = list.Count(); // get the length of list 
+
+            lblRecordCount.Text = "Record " + index + " of " + totalRows;// record count set to total rows in data source
+            list.Clear(); // clear the list
         }
 
         #endregion
@@ -167,7 +159,7 @@ namespace TPPI
             {
                 dbConn.Open();  // Open database connection              
                 getThenLoadData(qryFirst); /*METHOD TO PARSE THE QUERIES AND RETURN DATA*/
-                getRecordCount(); // gets record count and sets to screen
+                getIndex();
                 dbConn.Close(); // Close database connection
             }
             catch (Exception ex)
@@ -184,7 +176,7 @@ namespace TPPI
             {
                 dbConn.Open();// Open database connection                   
                 getThenLoadData(qryLast); /*METHODS TO PARSE THE QUERIES AND RETURN DATA*/
-                getRecordCount(); // gets record count and sets to screen
+                getIndex();
                 dbConn.Close();// Close database connection
             }
             catch (Exception ex)
@@ -201,7 +193,7 @@ namespace TPPI
             {
                 dbConn.Open();  //Open db Connection
                 getThenLoadData(qryPrev); //Get data from db and load to all relevant fields
-                getRecordCount(); // gets record count and sets to screen
+                getIndex();
                 dbConn.Close(); //Close the db Connection
             }
             catch (Exception ex)
@@ -217,8 +209,8 @@ namespace TPPI
             try
             {
                 dbConn.Open();//Open db Connection
-                getThenLoadData(qryNext);//Get data from db and load to all relevant fields 
-                getRecordCount(); // gets record count and sets to screen
+                getThenLoadData(qryNext);//Get data from db and load to all relevant fields                          
+                getIndex();
                 dbConn.Close();//Close db connection
             }
             catch (Exception ex)
