@@ -9,8 +9,10 @@
 /// </summary>
 
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.OleDb;
+using System.Linq;
 using System.Windows.Forms;
 
 
@@ -20,13 +22,15 @@ namespace TPPI
     {
         #region GLOBAL VARIABLES
 
-        int activeID = 1; // instance of active record id 
+        int activeID = 9; // instance of active record id 
         int totalRows = 0; // instance of total rows in journal database
         const string cString = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=journal.accdb;Persist Security Info=True";//connection string
         static OleDbConnection dbConn = new OleDbConnection(cString); //instance of data base connection 
         static OleDbCommand dbCmd = new OleDbCommand(); //instance of data base command
         static OleDbDataAdapter dbAdapter = new OleDbDataAdapter(); //instance of data base adapter
         DataSet ds = new DataSet(); // instance of new dataset
+        DataSet ds2 = new DataSet(); // dataset used for journal datatable
+        static DataTable dtJournals = new DataTable();
 
         #endregion
 
@@ -49,6 +53,7 @@ namespace TPPI
                 getRecordCount();//load record count data
                 dbConn.Close(); //close database connection
                 createDataTable();
+     
             }
             catch (Exception ex)
             {
@@ -81,6 +86,7 @@ namespace TPPI
             reader.Read();// reader reads
             totalRows = (int)reader["TotalJournals"];// total rows set to record data
             lblRecordCount.Text = "Record " + activeID + " of " + totalRows;// record count set to total rows in data source
+            
         }
 
         /*Load combox box data*/
@@ -121,22 +127,31 @@ namespace TPPI
         }
 
 
-        public void createDataTable()
+        public DataTable createDataTable()
         {
-            dbConn.Open();
-            DataSet ds2 = new DataSet();
+            dbConn.Open(); 
+
             string qryTblTopics = "SELECT * FROM tblJournals";// SQL query - SELECT everything from topics table
             dbConn = new OleDbConnection(cString);// instance of db connection
             dbAdapter = new OleDbDataAdapter(qryTblTopics, dbConn);// instance of data adapter
-            dbConn.Open();// open db connection
             dbAdapter.Fill(ds2);// fill data adapter with data set 
-
-            DataTable dtJournals = ds2.Tables[0];
-
             dbConn.Close();
+            dtJournals = ds2.Tables[0];
+
+            var myData = ds2.Tables[0].AsEnumerable().Select(r => new
+            {
+                id = r.Field<int>("JournalID")
+
+            });
+
+            var list = myData.ToList();
+            activeID = 9;
+            var oProp = activeID;
+            var index = list.FindIndex(a => a.id == oProp);
+            int totalRows = list.Count();
+            return dtJournals;
+
         }
-
-
 
         #endregion
 
@@ -278,4 +293,6 @@ namespace TPPI
 
         #endregion
     }
+
+
 }

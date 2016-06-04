@@ -50,6 +50,7 @@
     <Compile Include="Journal.Designer.cs">
       <DependentUpon>Journal.cs</DependentUpon>
     </Compile>
+    <Compile Include="jSearch.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Topics.cs">
